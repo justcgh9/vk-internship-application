@@ -1,0 +1,28 @@
+version: '3'
+tasks:
+  tidy:
+    cmds:
+      - go mod tidy 
+  
+  docker:inspect:
+    dotenv: [".env"]
+    cmds:
+      - docker exec -it {{.CONTAINTER_NAME}} psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+    vars:
+      CONTAINTER_NAME: ${POSTGRES_DB}
+
+  migrate:up:    
+    desc: Run upward migrations on marketplace service
+    dotenv: [".env"]
+    cmds:
+      - go run cmd/migrator/main.go -db "{{.DB_URL}}" -path "./migrations" -action up
+    vars:
+      DB_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+
+  migrate:down:    
+    desc: Run downward migrations on marketplace service
+    dotenv: [".env"]
+    cmds:
+      - go run cmd/migrator/main.go -db "{{.DB_URL}}" -path "./migrations" -action down
+    vars:
+      DB_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
