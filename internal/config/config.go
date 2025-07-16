@@ -17,6 +17,7 @@ type Config struct {
 
 	DatabaseURI string `yaml:"db_uri"`
 	JWTSecret	string `yaml:"jwt_secret"`
+	TokenTTL	time.Duration `yaml:"token_ttl" env-default:"15m"`
 }
 
 func MustLoad() *Config {

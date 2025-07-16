@@ -19,7 +19,7 @@ type CreateListingRequest struct {
 func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 	var req CreateListingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid JSON", http.StatusBadRequest)
+		http.Error(w, "invalid JSON" + err.Error(), http.StatusBadRequest)
 		return
 	}
 	if err := h.validator.Struct(req); err != nil {

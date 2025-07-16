@@ -4,6 +4,10 @@ tasks:
     cmds:
       - go mod tidy 
   
+  exec:app:
+    cmds:
+      - go run ./cmd/app --config=./config/local.yml
+
   docker:inspect:
     dotenv: [".env"]
     cmds:

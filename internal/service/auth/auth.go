@@ -16,7 +16,7 @@ var (
 )
 
 type AuthService interface {
-	Register(ctx context.Context, username, password string) (*models.User, error)
+	Register(ctx context.Context, username, password string) (*models.User, string, error)
 	Login(ctx context.Context, username, password string) (token string, err error)
 	VerifyToken(token string) (int64, error)
 }
@@ -33,17 +33,27 @@ func New(userRepo storage.UserRepository, tm *TokenManager) AuthService {
 	}
 }
 
-func (s *service) Register(ctx context.Context, username, password string) (*models.User, error) {
+func (s *service) Register(ctx context.Context, username, password string) (*models.User, string, error) {
 	if len(username) < 3 || len(password) < 6 || strings.TrimSpace(username) == "" {
-		return nil, ErrInvalidInput
+		return nil, "", ErrInvalidInput
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return s.userRepo.CreateUser(ctx, username, string(hash))
+	usr, err := s.userRepo.CreateUser(ctx, username, string(hash))
+	if err != nil {
+		return nil, "", err
+	}
+
+	token, err := s.tokenManager.GenerateToken(usr.ID)
+	if err != nil {
+		return nil, "", err
+	}
+	
+	return usr, token, err
 }
 
 func (s *service) Login(ctx context.Context, username, password string) (string, error) {

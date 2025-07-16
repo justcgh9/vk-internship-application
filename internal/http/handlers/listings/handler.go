@@ -23,13 +23,11 @@ func New(listingSvc listing.Service, v *validator.Validate) *Handler {
 func (h *Handler) Routes(authSvc auth.AuthService) chi.Router {
 	r := chi.NewRouter()
 
-	// Authenticated routes
 	r.Group(func(r chi.Router) {
-		r.Use(middleware.AuthMiddleware(authSvc)) // ensures user is in context
+		r.Use(middleware.AuthMiddleware(authSvc))
 		r.Post("/", h.CreateListing)
 	})
 
-	// Public route
 	r.Get("/", h.ListListings)
 
 	return r
