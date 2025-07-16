@@ -16,6 +16,7 @@ type Config struct {
 	} `yaml:"server"`
 
 	DatabaseURI string `yaml:"db_uri"`
+	JWTSecret	string `yaml:"jwt_secret"`
 }
 
 func MustLoad() *Config {

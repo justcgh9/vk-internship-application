@@ -3,5 +3,5 @@ server:
   port: "8080"
   timeout: 10s
   idle_timeout: 60s
-
+jwt_secret: "supersecretjwtkey"
 db_uri: "postgres://marketplace_usr:marketplace_pass@localhost:5432/marketplace_db?sslmode=disable"

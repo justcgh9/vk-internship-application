@@ -13,7 +13,7 @@ var (
 	ErrInvalidListing = errors.New("invalid listing data")
 )
 
-type ListingService interface {
+type Service interface {
 	Create(ctx context.Context, l *models.Listing) (*models.Listing, error)
 	List(ctx context.Context, filter storage.ListFilter) ([]*models.ListingWithAuthor, error)
 }
@@ -22,7 +22,7 @@ type service struct {
 	listingRepo storage.ListingRepository
 }
 
-func New(listingRepo storage.ListingRepository) ListingService {
+func New(listingRepo storage.ListingRepository) Service {
 	return &service{listingRepo: listingRepo}
 }
 
