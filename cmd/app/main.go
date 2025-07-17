@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/justcgh9/vk-internship-application/internal/config"
 	authhandler "github.com/justcgh9/vk-internship-application/internal/http/handlers/auth"
 	listingshandler "github.com/justcgh9/vk-internship-application/internal/http/handlers/listings"
@@ -25,7 +26,7 @@ import (
 func main() {
 
 	cfg := config.MustLoad()
-	
+
 	logger.Init(slog.LevelDebug)
 	logger.Log.Info("Starting application...")
 
@@ -51,9 +52,8 @@ func main() {
 		authSvc,
 		validate,
 	)
-	
-	r.Mount("/auth", authHandler.Routes(authSvc))
 
+	r.Mount("/auth", authHandler.Routes(authSvc))
 
 	listingsHandler := listingshandler.New(
 		listingSvc,

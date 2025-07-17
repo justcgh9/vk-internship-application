@@ -14,8 +14,8 @@ type RegisterRequest struct {
 }
 
 type RegisterRespone struct {
-	User	*models.User	`json:"user"`
-	Token	string			`json:"token"` 
+	User  *models.User `json:"user"`
+	Token string       `json:"token"`
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpx.WriteJSON(w, http.StatusCreated, RegisterRespone{
-		User: user,
+		User:  user,
 		Token: token,
 	})
 }

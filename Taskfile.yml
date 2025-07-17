@@ -4,6 +4,10 @@ tasks:
     cmds:
       - go mod tidy 
   
+  lint:
+    cmds:
+      - golangci-lint run --timeout 3m
+  
   exec:app:
     cmds:
       - go run ./cmd/app --config=./config/local.yml

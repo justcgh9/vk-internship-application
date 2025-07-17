@@ -61,8 +61,6 @@ func OptionalAuthMiddleware(authSvc auth.AuthService) func(http.Handler) http.Ha
 	}
 }
 
-
-
 func GetUserID(ctx context.Context) (int64, bool) {
 	uid, ok := ctx.Value(userIDKey).(int64)
 	return uid, ok

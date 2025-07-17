@@ -3,6 +3,7 @@ package listings
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+
 	"github.com/justcgh9/vk-internship-application/internal/http/middleware"
 	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 	"github.com/justcgh9/vk-internship-application/internal/service/listing"

@@ -1,0 +1,66 @@
+run:
+  timeout: 3m
+  tests: true
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - unused
+    - ineffassign
+    - typecheck
+    - revive
+    - gofmt
+    - goimports
+    - gocritic
+    - bodyclose
+    - prealloc
+    - copyloopvar
+    - forbidigo
+    - gocognit
+    - dupl
+
+  disable:
+    - godot
+    - lll
+    - funlen
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+
+  revive:
+    severity: warning
+    ignore-generated-header: true
+    rules:
+      - name: indent-error-flow
+      - name: var-naming
+      - name: blank-imports
+      - name: unnecessary-stmt
+
+  gofmt:
+    simplify: true
+
+  goimports:
+    local-prefixes: github.com/justcgh9/vk-internship-application
+
+  dupl:
+    threshold: 150
+
+  gocognit:
+    min-complexity: 20
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-dirs:
+    - migrations
+    - vendor
+  exclude-files:
+    - ".*_gen.go"
+
+output:
+  formats: colored-line-number

@@ -5,9 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -52,7 +53,7 @@ func (s *service) Register(ctx context.Context, username, password string) (*mod
 	if err != nil {
 		return nil, "", err
 	}
-	
+
 	return usr, token, err
 }
 

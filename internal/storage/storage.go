@@ -23,11 +23,11 @@ type ListingRepository interface {
 
 // Filtering and pagination options for listings
 type ListFilter struct {
-	Limit       int
-	Offset      int
-	SortBy      string    // "created_at" or "price"
-	SortOrder   string    // "asc" or "desc"
-	PriceMin    *float64  // optional
-	PriceMax    *float64  // optional
-	ViewerID    *int64    // optional, used to mark user's own listings
+	Limit     int
+	Offset    int
+	SortBy    string   // "created_at" or "price"
+	SortOrder string   // "asc" or "desc"
+	PriceMin  *float64 // optional
+	PriceMax  *float64 // optional
+	ViewerID  *int64   // optional, used to mark user's own listings
 }
