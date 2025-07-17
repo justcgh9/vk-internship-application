@@ -28,7 +28,10 @@ func (h *Handler) Routes(authSvc auth.AuthService) chi.Router {
 		r.Post("/", h.CreateListing)
 	})
 
-	r.Get("/", h.ListListings)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.OptionalAuthMiddleware(authSvc))
+		r.Get("/", h.ListListings)
+	})
 
 	return r
 }

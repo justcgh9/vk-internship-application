@@ -33,6 +33,29 @@ func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// На момент имплементации возник вопрос о том как валидировать формат и размер изображения
+	// Здесь предоставлен вариант реализации данного требования, но при тестировании это время от времени сильно замедляло работу ручки
+	// Поэтому я оставляю его здесь только в качестве комментария
+
+	// resp, err := http.Get(req.ImageURL)
+	// if err != nil || resp.StatusCode != http.StatusOK {
+	// 	http.Error(w, "invalid image URL", http.StatusBadRequest)
+	// 	return
+	// }
+	// defer resp.Body.Close()
+
+	// contentType := resp.Header.Get("Content-Type")
+	// if contentType != "image/jpeg" && contentType != "image/png" {
+	// 	http.Error(w, "unsupported image format", http.StatusBadRequest)
+	// 	return
+	// }
+
+	// if size := resp.ContentLength; size > 5*1024*1024 { // число здесь установлено чисто для примера, если бы я решил оставить его, оно было бы вынесено в константы
+	// 	http.Error(w, "image too large", http.StatusBadRequest)
+	// 	return
+	// }
+
+
 	listing := &models.Listing{
 		Title:       req.Title,
 		Description: req.Description,

@@ -52,7 +52,7 @@ func main() {
 		validate,
 	)
 	
-	r.Mount("/auth", authHandler.Routes())
+	r.Mount("/auth", authHandler.Routes(authSvc))
 
 
 	listingsHandler := listingshandler.New(

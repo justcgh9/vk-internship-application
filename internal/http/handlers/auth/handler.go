@@ -2,8 +2,9 @@ package auth
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 	"github.com/go-playground/validator/v10"
+	"github.com/justcgh9/vk-internship-application/internal/http/middleware"
+	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 )
 
 type Handler struct {
@@ -18,11 +19,19 @@ func New(authSvc auth.AuthService, v *validator.Validate) *Handler {
 	}
 }
 
-func (h *Handler) Routes() chi.Router {
+func (h *Handler) Routes(authSvc auth.AuthService) chi.Router {
 	r := chi.NewRouter()
 
-	r.Post("/register", h.Register)
-	r.Post("/login", h.Login)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.OptionalAuthMiddleware(authSvc))
+		r.Post("/register", h.Register)
+	})
+
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.OptionalAuthMiddleware(authSvc))
+		r.Post("/login", h.Login)
+	})
+	
 
 	return r
 }
