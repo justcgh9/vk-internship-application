@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
@@ -20,7 +19,7 @@ type Storage struct {
 	db DB
 }
 
-func NewStorage(db *pgxpool.Pool) *Storage {
+func NewStorage(db DB) *Storage {
 	return &Storage{db: db}
 }
 
@@ -137,3 +136,4 @@ func (s *Storage) ListListings(ctx context.Context, filter storage.ListFilter) (
 	}
 	return listings, nil
 }
+
