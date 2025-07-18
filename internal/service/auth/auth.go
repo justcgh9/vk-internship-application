@@ -75,7 +75,7 @@ func (s *service) Login(ctx context.Context, username, password string) (string,
 func (s *service) GetUser(ctx context.Context, id int64) (*models.User, error) {
 	user, err := s.userRepo.GetUserByID(ctx, id)
 	if err != nil {
-		return  nil, ErrInvalidCredentials
+		return nil, ErrInvalidCredentials
 	}
 
 	return user, nil
