@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/justcgh9/vk-internship-application/internal/models"
-	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/justcgh9/vk-internship-application/internal/models"
+	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 )
 
 // --- Mocks ---

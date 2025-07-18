@@ -136,4 +136,3 @@ func (s *Storage) ListListings(ctx context.Context, filter storage.ListFilter) (
 	}
 	return listings, nil
 }
-

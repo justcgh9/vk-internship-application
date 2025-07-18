@@ -5,8 +5,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/justcgh9/vk-internship-application/internal/service/auth"
 )
 
 func TestGenerateAndParseToken_Success(t *testing.T) {
@@ -21,12 +22,11 @@ func TestGenerateAndParseToken_Success(t *testing.T) {
 }
 
 func TestParseToken_InvalidSignature(t *testing.T) {
-	
+
 	tm := auth.NewTokenManager("secretA", time.Minute)
 	tokenStr, err := tm.GenerateToken(1)
 	assert.NoError(t, err)
 
-	
 	tm2 := auth.NewTokenManager("secretB", time.Minute)
 	_, err = tm2.ParseToken(tokenStr)
 	assert.ErrorIs(t, err, auth.ErrInvalidToken)
@@ -40,7 +40,7 @@ func TestParseToken_InvalidFormat(t *testing.T) {
 }
 
 func TestParseToken_Expired(t *testing.T) {
-	tm := auth.NewTokenManager("secret", -time.Second) 
+	tm := auth.NewTokenManager("secret", -time.Second)
 
 	tokenStr, err := tm.GenerateToken(123)
 	assert.NoError(t, err)
@@ -50,7 +50,7 @@ func TestParseToken_Expired(t *testing.T) {
 }
 
 func TestParseToken_MissingUserIDClaim(t *testing.T) {
-	
+
 	claims := jwt.MapClaims{
 		"exp": time.Now().Add(time.Minute).Unix(),
 		"iat": time.Now().Unix(),

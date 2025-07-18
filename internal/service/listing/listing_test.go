@@ -7,11 +7,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/service/listing"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 // --- Mocks ---
@@ -102,7 +103,6 @@ func TestCreate_RepoError(t *testing.T) {
 	assert.Contains(t, err.Error(), "insert failed")
 	repo.AssertExpectations(t)
 }
-
 
 func TestList_Success(t *testing.T) {
 	repo := new(mockRepo)

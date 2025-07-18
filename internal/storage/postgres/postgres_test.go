@@ -9,11 +9,12 @@ import (
 	"unsafe"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/pashagolub/pgxmock/v4"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
 	"github.com/justcgh9/vk-internship-application/internal/storage/postgres"
-	"github.com/pashagolub/pgxmock/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateUser_Success(t *testing.T) {
@@ -23,7 +24,6 @@ func TestCreateUser_Success(t *testing.T) {
 
 	store := &postgres.Storage{}
 	setFieldValue(store, "db", mockConn)
-	
 
 	rows := pgxmock.NewRows([]string{"id", "username", "created_at"}).
 		AddRow(int64(1), "alice", time.Now())
@@ -47,7 +47,6 @@ func TestCreateUser_QueryError(t *testing.T) {
 
 	store := &postgres.Storage{}
 	setFieldValue(store, "db", mockConn)
-	
 
 	mockConn.ExpectQuery(`INSERT INTO users`).
 		WithArgs("alice", "hashedpassword").
@@ -67,7 +66,6 @@ func TestGetUserByUsername_Success(t *testing.T) {
 
 	store := &postgres.Storage{}
 	setFieldValue(store, "db", mockConn)
-	
 
 	rows := pgxmock.NewRows([]string{"id", "username", "password_hash", "created_at"}).
 		AddRow(int64(1), "bob", "hashed", time.Now())
@@ -91,7 +89,6 @@ func TestGetUserByUsername_NotFound(t *testing.T) {
 
 	store := &postgres.Storage{}
 	setFieldValue(store, "db", mockConn)
-	
 
 	mockConn.ExpectQuery(`SELECT id, username, password_hash, created_at FROM users WHERE username = \$1`).
 		WithArgs("nonexistent").
