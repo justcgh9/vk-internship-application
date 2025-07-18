@@ -18,7 +18,7 @@ type ListingWithAuthor struct {
 	Description string    `json:"description"`
 	ImageURL    string    `json:"image_url"`
 	Price       float64   `json:"price"`
-	AuthorLogin string    `json:"author_login"`
+	AuthorLogin string    `json:"author_login,omitempty"`
 	IsOwned     bool      `json:"is_owned,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 }

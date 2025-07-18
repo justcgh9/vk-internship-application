@@ -10,12 +10,14 @@ import (
 )
 
 type Handler struct {
-	listingSvc listing.Service
-	validator  *validator.Validate
+	authSvc 	auth.AuthService
+	listingSvc 	listing.Service
+	validator  	*validator.Validate
 }
 
-func New(listingSvc listing.Service, v *validator.Validate) *Handler {
+func New(authSvc auth.AuthService,listingSvc listing.Service, v *validator.Validate) *Handler {
 	return &Handler{
+		authSvc: authSvc,
 		listingSvc: listingSvc,
 		validator:  v,
 	}

@@ -56,6 +56,7 @@ func main() {
 	r.Mount("/auth", authHandler.Routes(authSvc))
 
 	listingsHandler := listingshandler.New(
+		authSvc,
 		listingSvc,
 		validate,
 	)

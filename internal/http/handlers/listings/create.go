@@ -69,5 +69,21 @@ func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpx.WriteJSON(w, http.StatusCreated, created)
+	resp := &models.ListingWithAuthor{
+		ID: created.ID,
+		Title: created.Title,
+		Description: created.Description,
+		ImageURL: req.ImageURL,
+		Price: req.Price,
+		IsOwned: true,
+		CreatedAt: created.CreatedAt,
+	}
+
+	user, err := h.authSvc.GetUser(r.Context(), userID)
+	if err == nil {
+		resp.AuthorLogin = user.Username
+	} 
+	
+
+	httpx.WriteJSON(w, http.StatusCreated, resp)
 }

@@ -20,6 +20,7 @@ type AuthService interface {
 	Register(ctx context.Context, username, password string) (*models.User, string, error)
 	Login(ctx context.Context, username, password string) (token string, err error)
 	VerifyToken(token string) (int64, error)
+	GetUser(ctx context.Context, id int64) (*models.User, error)
 }
 
 type service struct {
@@ -69,6 +70,15 @@ func (s *service) Login(ctx context.Context, username, password string) (string,
 
 	token, err := s.tokenManager.GenerateToken(user.ID)
 	return token, err
+}
+
+func (s *service) GetUser(ctx context.Context, id int64) (*models.User, error) {
+	user, err := s.userRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return  nil, ErrInvalidCredentials
+	}
+
+	return user, nil
 }
 
 func (s *service) VerifyToken(token string) (int64, error) {

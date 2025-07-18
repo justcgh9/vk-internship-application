@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/justcgh9/vk-internship-application/internal/http/middleware"
+	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
 	"github.com/justcgh9/vk-internship-application/pkg/httpx"
 )
@@ -38,6 +39,10 @@ func (h *Handler) ListListings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "failed to fetch listings: "+err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	if listings == nil {
+		listings = []*models.ListingWithAuthor{}
 	}
 
 	httpx.WriteJSON(w, http.StatusOK, listings)
