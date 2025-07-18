@@ -1,4 +1,21 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CONFIG_PATH: ./config/prod.yml
+        SERVER_PORT: 8080
+    container_name: vkapp
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+    depends_on:
+      - db
+    networks:
+      - backend
   db:
     image: postgres:15
     container_name: marketplace_db
@@ -11,6 +28,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
 volumes:
   db_data:
+
+networks:
+  backend:
+    driver: bridge
