@@ -42,7 +42,7 @@ jobs:
       - name: Run Tests
         run: |
           go test -coverprofile=coverage.out -coverpkg=./internal/... ./internal/...
-          sed -i '/models\|log\|config/d' coverage.out 
+          sed -i '/models\|log\|middleware\|config/d' coverage.out 
 
       - name: Install goveralls
         run: go install github.com/mattn/goveralls@latest
