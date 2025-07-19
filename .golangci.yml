@@ -61,6 +61,7 @@ issues:
     - vendor
   exclude-files:
     - ".*_gen.go"
+    - ".*_test.go"
 
 output:
   formats: colored-line-number
