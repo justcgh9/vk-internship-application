@@ -1,0 +1,52 @@
+name: Merch App CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: Run GolangCI-Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5.3.0
+        with:
+          go-version: 1.24.1
+
+      - name: Verify go mod tidy produces no changes
+        run: |
+          go mod tidy
+          git diff --exit-code || (echo "Run 'go mod tidy' and commit changes" && exit 1)
+
+      - name: Run GolangCI-Lint
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: v1.64.6
+          args: --timeout=5m
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24"
+
+      - name: Run Tests
+        run: |
+          go test -coverprofile=coverage.out -coverpkg=./internal/... ./internal/...
+          sed -i '/models\|log\|config/d' coverage.out 
+
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
+      - name: Send coverage
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: goveralls -coverprofile=coverage.out -service=github
