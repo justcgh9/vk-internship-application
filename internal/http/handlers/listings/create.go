@@ -16,6 +16,10 @@ type CreateListingRequest struct {
 	Price       float64 `json:"price" validate:"required,gt=0"`
 }
 
+const (
+	MaxImageSize = 5 * 1024 * 1024
+)
+
 func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 	var req CreateListingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -33,27 +37,23 @@ func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// На момент имплементации возник вопрос о том как валидировать формат и размер изображения
-	// Здесь предоставлен вариант реализации данного требования, но при тестировании это время от времени сильно замедляло работу ручки
-	// Поэтому я оставляю его здесь только в качестве комментария
+	resp, err := http.Get(req.ImageURL)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		http.Error(w, "invalid image URL", http.StatusBadRequest)
+		return
+	}
+	defer func() { _ = resp.Body.Close() }()
 
-	// resp, err := http.Get(req.ImageURL)
-	// if err != nil || resp.StatusCode != http.StatusOK {
-	// 	http.Error(w, "invalid image URL", http.StatusBadRequest)
-	// 	return
-	// }
-	// defer resp.Body.Close()
+	contentType := resp.Header.Get("Content-Type")
+	if contentType != "image/jpeg" && contentType != "image/png" {
+		http.Error(w, "unsupported image format", http.StatusBadRequest)
+		return
+	}
 
-	// contentType := resp.Header.Get("Content-Type")
-	// if contentType != "image/jpeg" && contentType != "image/png" {
-	// 	http.Error(w, "unsupported image format", http.StatusBadRequest)
-	// 	return
-	// }
-
-	// if size := resp.ContentLength; size > 5*1024*1024 { // число здесь установлено чисто для примера, если бы я решил оставить его, оно было бы вынесено в константы
-	// 	http.Error(w, "image too large", http.StatusBadRequest)
-	// 	return
-	// }
+	if size := resp.ContentLength; size > MaxImageSize {
+		http.Error(w, "image too large", http.StatusBadRequest)
+		return
+	}
 
 	listing := &models.Listing{
 		Title:       req.Title,
@@ -69,7 +69,7 @@ func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := &models.ListingWithAuthor{
+	response := &models.ListingWithAuthor{
 		ID:          created.ID,
 		Title:       created.Title,
 		Description: created.Description,
@@ -81,8 +81,8 @@ func (h *Handler) CreateListing(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.authSvc.GetUser(r.Context(), userID)
 	if err == nil {
-		resp.AuthorLogin = user.Username
+		response.AuthorLogin = user.Username
 	}
 
-	httpx.WriteJSON(w, http.StatusCreated, resp)
+	httpx.WriteJSON(w, http.StatusCreated, response)
 }
