@@ -64,7 +64,7 @@ func TestCreateListing(t *testing.T) {
 	input := listings.CreateListingRequest{
 		Title:       "Test Listing",
 		Description: "A valid description for the listing",
-		ImageURL:    "https://example.com/image.jpg",
+		ImageURL:    "https://i.pinimg.com/474x/bd/a8/0e/bda80e9324bd6d5c83b84b6eac5a1e5d.jpg",
 		Price:       123.45,
 	}
 	body, _ := json.Marshal(input)
