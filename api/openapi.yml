@@ -5,6 +5,7 @@ info:
   description: API for user authentication and listings management.
 servers:
   - url: http://localhost:8080
+  - url: http://papaya-copper13073.my-vm.work
 paths:
   /auth/register:
     post:
@@ -22,7 +23,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegisterResponse'
-        '400':
+        '422':
           description: Invalid input
   /auth/login:
     post:
@@ -40,10 +41,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
-        '400':
-          description: Invalid input
         '401':
           description: Unauthorized
+        '422':
+          description: Invalid input
   /listings:
     get:
       summary: Get a list of listings
@@ -87,6 +88,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ListingWithAuthor'
+        '401':
+          description: Token is provided, but is invalid
+        '500':
+          description: Internal Server Error
     post:
       summary: Create a new listing
       security:
