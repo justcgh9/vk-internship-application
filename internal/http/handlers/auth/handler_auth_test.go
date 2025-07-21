@@ -84,7 +84,7 @@ func TestRegister_InvalidJSON(t *testing.T) {
 
 	handler.Register(w, req)
 
-	require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, w.Result().StatusCode)
 }
 
 func TestRegister_ValidationError(t *testing.T) {
@@ -102,7 +102,7 @@ func TestRegister_ValidationError(t *testing.T) {
 
 	handler.Register(w, req)
 
-	require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, w.Result().StatusCode)
 }
 
 func TestRegister_ServiceError(t *testing.T) {
@@ -166,7 +166,7 @@ func TestLogin_InvalidJSON(t *testing.T) {
 
 	handler.Login(w, req)
 
-	require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, w.Result().StatusCode)
 }
 
 func TestLogin_ValidationError(t *testing.T) {
@@ -184,7 +184,7 @@ func TestLogin_ValidationError(t *testing.T) {
 
 	handler.Login(w, req)
 
-	require.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
+	require.Equal(t, http.StatusUnprocessableEntity, w.Result().StatusCode)
 }
 
 func TestLogin_Unauthorized(t *testing.T) {

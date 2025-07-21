@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
     networks:
+      - infra
       - backend
   db:
     image: postgres:15
@@ -31,9 +32,48 @@ services:
     networks:
       - backend
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      - infra
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+    restart: always
+    depends_on:
+      - prometheus
+      - jaeger
+    networks:
+      - infra
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.56
+    container_name: jaeger
+    ports:
+      - "16686:16686"   
+      - "4317:4317"     
+      - "4318:4318"     
+    networks:
+      - infra
+
+
 volumes:
   db_data:
+  tempo_data:
 
 networks:
   backend:
+    driver: bridge
+  infra:
     driver: bridge

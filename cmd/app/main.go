@@ -13,6 +13,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/riandyrn/otelchi"
+
+	"github.com/justcgh9/vk-internship-application/pkg/tracing"
 
 	"github.com/justcgh9/vk-internship-application/internal/config"
 	authhandler "github.com/justcgh9/vk-internship-application/internal/http/handlers/auth"
@@ -21,6 +25,7 @@ import (
 	"github.com/justcgh9/vk-internship-application/internal/service/listing"
 	"github.com/justcgh9/vk-internship-application/internal/storage/postgres"
 	"github.com/justcgh9/vk-internship-application/pkg/logger"
+	"github.com/justcgh9/vk-internship-application/pkg/metrics"
 )
 
 func main() {
@@ -29,6 +34,8 @@ func main() {
 
 	logger.Init(slog.LevelDebug)
 	logger.Log.Info("Starting application...")
+
+	metrics.Init()
 
 	dbpool, err := pgxpool.New(context.Background(), cfg.DatabaseURI)
 	if err != nil {
@@ -42,9 +49,27 @@ func main() {
 	authSvc := auth.New(store, auth.NewTokenManager(cfg.JWTSecret, cfg.TokenTTL))
 	listingSvc := listing.New(store)
 
+	ctx := context.Background()
+	shutdownTracing, err := tracing.Init(ctx, "vk-intern-app")
+	if err != nil {
+		logger.Log.Error("failed to initialize tracing", slog.Any("err", err))
+		return
+	}
+	defer func() {
+		if err := shutdownTracing(ctx); err != nil {
+			logger.Log.Error("error shutting down tracer", slog.Any("err", err))
+		}
+	}()
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: slog.NewLogLogger(logger.Log.Handler(), slog.LevelDebug)}))
 	r.Use(middleware.Recoverer)
+	r.Use(metrics.Middleware)
+	r.Use(otelchi.Middleware("vk-intern-app"))
+
+	r.Get("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler().ServeHTTP(w, r)
+	})
 
 	validate := validator.New()
 
