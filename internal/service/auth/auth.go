@@ -3,12 +3,14 @@ package auth
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/justcgh9/vk-internship-application/internal/models"
 	"github.com/justcgh9/vk-internship-application/internal/storage"
+	"github.com/justcgh9/vk-internship-application/pkg/logger"
 )
 
 var (
@@ -36,48 +38,75 @@ func New(userRepo storage.UserRepository, tm *TokenManager) AuthService {
 }
 
 func (s *service) Register(ctx context.Context, username, password string) (*models.User, string, error) {
+	log := logger.
+		FromContext(ctx).
+		With("component", "service", "method", "Register")
+
 	if len(username) < 3 || len(password) < 6 || strings.TrimSpace(username) == "" {
+		log.Warn("invalid registration input", slog.String("username", username))
 		return nil, "", ErrInvalidInput
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Error("failed to hash password", slog.String("err", err.Error()))
 		return nil, "", err
 	}
 
-	usr, err := s.userRepo.CreateUser(ctx, username, string(hash))
+	user, err := s.userRepo.CreateUser(ctx, username, string(hash))
 	if err != nil {
+		log.Error("failed to create user", slog.String("err", err.Error()))
 		return nil, "", err
 	}
 
-	token, err := s.tokenManager.GenerateToken(usr.ID)
+	token, err := s.tokenManager.GenerateToken(user.ID)
 	if err != nil {
+		log.Error("failed to generate token", slog.String("err", err.Error()))
 		return nil, "", err
 	}
 
-	return usr, token, err
+	log.Info("user registered successfully", slog.Int64("user_id", user.ID))
+	return user, token, nil
 }
 
 func (s *service) Login(ctx context.Context, username, password string) (string, error) {
+	log := logger.
+		FromContext(ctx).
+		With("component", "service", "method", "Login")
+
 	user, err := s.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
+		log.Warn("user not found", slog.String("username", username))
 		return "", ErrInvalidCredentials
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		log.Warn("invalid password", slog.Int64("user_id", user.ID))
 		return "", ErrInvalidCredentials
 	}
 
 	token, err := s.tokenManager.GenerateToken(user.ID)
-	return token, err
+	if err != nil {
+		log.Error("failed to generate token", slog.Int64("user_id", user.ID), slog.String("err", err.Error()))
+		return "", err
+	}
+
+	log.Info("login successful", slog.Int64("user_id", user.ID))
+	return token, nil
 }
 
 func (s *service) GetUser(ctx context.Context, id int64) (*models.User, error) {
+	log := logger.
+		FromContext(ctx).
+		With("component", "service", "method", "GetUser", "user_id", id)
+
 	user, err := s.userRepo.GetUserByID(ctx, id)
 	if err != nil {
+		log.Warn("user not found")
 		return nil, ErrInvalidCredentials
 	}
 
+	log.Debug("user found")
 	return user, nil
 }
 

@@ -1,8 +1,11 @@
 package logger
 
 import (
+	"context"
 	"log/slog"
 	"os"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 var (
@@ -14,4 +17,15 @@ func Init(level slog.Level) {
 		Level: level,
 	})
 	Log = slog.New(handler)
+}
+
+func FromContext(ctx context.Context) *slog.Logger {
+	if Log == nil {
+		Init(slog.LevelInfo)
+	}
+	span := trace.SpanFromContext(ctx)
+	if span == nil || !span.SpanContext().HasTraceID() {
+		return Log
+	}
+	return Log.With("trace_id", span.SpanContext().TraceID().String())
 }
